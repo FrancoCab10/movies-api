@@ -1,9 +1,11 @@
 'use strict';
 const bcrypt = require('bcrypt');
 const auth = require('../config/auth');
-const db = require('../config/db');
-const User = require('../models/User');
-const UserAuth = require('../models/UserAuth');
+const {
+  sequelize: db,
+  user: User,
+  userAuth: UserAuth
+} = require("../database");
 
 const UserController = {
 
@@ -100,7 +102,7 @@ const UserController = {
             message: 'Could not find User'
           });
         }
-        
+
       } catch (error) {
         res.status(500).json({ error: true, message: 'Login error' });
       }

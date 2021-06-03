@@ -1,10 +1,12 @@
 'use strict';
 const { Op } = require("sequelize");
-const db = require("../config/db");
-const Movie = require('../models/Movie');
-const Comment = require('../models/Comment');
-const Rating = require("../models/Rating");
-const User = require("../models/User");
+const {
+  sequelize: db,
+  movie: Movie,
+  comment: Comment,
+  rating: Rating,
+  user: User,
+} = require("../database");
 
 const MovieController = {
 
@@ -29,8 +31,8 @@ const MovieController = {
         ]
       };
       if (req.query.title) {
-        searchParams.where = { 
-          title: { 
+        searchParams.where = {
+          title: {
             [Op.like]: `%${req.query.title}%`
           }
         };
@@ -61,7 +63,7 @@ const MovieController = {
             'rating'
           ]
         ];
-        
+
         if (req.sessionInfo) {
           subqueries.push([
             db.literal(`(SELECT COALESCE((
@@ -125,7 +127,7 @@ const MovieController = {
       try {
         const data = req.body;
         if (data.id) data.id = undefined;
-  
+
         const result = await Movie.update(data, { where: { id } });
         if (result && result[0]) {
           res.json({ success: true, message: 'Movie successfully updated' });
@@ -152,7 +154,7 @@ const MovieController = {
     if (id) {
       try {
         const result = Movie.destroy({ where: { id } });
-          
+
         if (result) {
           res.json({ success: true, message: 'Movie successfully deleted' });
         } else {
@@ -179,7 +181,7 @@ const MovieController = {
       try {
         const userId = req.sessionInfo.sub;
         const result = await Rating.findOne({ where: { userId, movieId } })
-      
+
         if (result) {
           res.json(result);
         } else {
@@ -207,7 +209,7 @@ const MovieController = {
         const userId = req.sessionInfo.sub;
         const condition = { where: { userId, movieId } };
         const result = await Rating.findOne(condition);
-  
+
         if (result) await Rating.update(req.body, condition);
         else await Rating.create({ userId, movieId, rating: req.body.rating});
 
@@ -232,7 +234,7 @@ const MovieController = {
       try {
         const userId = req.sessionInfo.sub;
         const result = Comment.create({ movieId, userId, comment: req.body.comment })
-        
+
         if (result) {
           res.json({ success: true, message: 'Comment successfully added' });
         } else {

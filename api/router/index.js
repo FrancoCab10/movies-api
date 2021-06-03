@@ -5,13 +5,16 @@ const optionalAuth = require('../middlewares/optionalAuth');
 const UserController = require('../controllers/UserController');
 const MovieController = require('../controllers/MovieController');
 
+router.route('/')
+  .get((req, res) => res.status(200).json({code: 200, status: 'OK'}))
+
 router.route('/user')
   .get(auth, UserController.getAll)
   .post(auth, UserController.create);
 
 router.route('/user/:id')
   .get(auth, UserController.getById);
-  
+
 router.route('/login')
   .post(UserController.login);
 
